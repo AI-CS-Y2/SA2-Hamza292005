@@ -7,7 +7,7 @@ from sklearn.metrics import classification_report, accuracy_score, confusion_mat
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder, StandardScaler
 import matplotlib.pyplot as plt
 
-# Load the dataset
+# Loads the dataset
 data = pd.read_csv("obesity_data.csv")
 
 # Display basic dataset information
@@ -15,23 +15,22 @@ print(data.head())
 print(data.columns)
 print(data.info())
 
-# Clean column names
+# Clean column names This was done so no error occurs when writing target column
 data.columns = data.columns.str.strip()
 
-# Define target and features
 target_column = "ObesityCategory"
 X = data.drop(target_column, axis=1)
 y = data[target_column]
 
-# Encode the target variable
+# Encoding the target variable
 label_encoder = LabelEncoder()
 y = label_encoder.fit_transform(y)
 
-# Identify numerical and categorical columns
+# numerical and categorical columns
 numerical_columns = ['Age', 'Height', 'Weight', 'BMI', 'PhysicalActivityLevel']
 categorical_columns = ['Gender']
 
-# One-hot encode categorical features
+# One-hot encoding categorical features
 encoder = OneHotEncoder(sparse_output=False, handle_unknown="ignore")
 X_categorical = encoder.fit_transform(X[categorical_columns])
 categorical_feature_names = encoder.get_feature_names_out(categorical_columns)
@@ -40,23 +39,23 @@ categorical_feature_names = encoder.get_feature_names_out(categorical_columns)
 X_numerical = X[numerical_columns].to_numpy()
 X_processed = np.hstack([X_numerical, X_categorical])
 
-# Generate full feature names
+# Generate full feature names previus code had difference in features called and was giving error so this was included to make sure
 all_feature_names = numerical_columns + list(categorical_feature_names)
 print("Updated feature names:", all_feature_names)
 print("Number of updated feature names:", len(all_feature_names))
 
-# Scale numerical features
+
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X_processed)
 
-# Split data into training and testing sets
+
 X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
 
 # Train Decision Tree model
 dt_model = DecisionTreeClassifier(max_depth=5, random_state=42)
 dt_model.fit(X_train, y_train)
 
-# Evaluate Decision Tree model
+# Evaluate Decision Tree model Ai was used t create logic for models
 y_pred_dt = dt_model.predict(X_test)
 print("Decision Tree Results:")
 print(confusion_matrix(y_test, y_pred_dt))
@@ -85,7 +84,7 @@ print("Recall:", recall_score(y_test, y_pred_lr, average='weighted'))
 print("F1-Score:", f1_score(y_test, y_pred_lr, average='weighted'))
 print("ROC-AUC:", roc_auc_score(y_test, lr_model.predict_proba(X_test), multi_class='ovr'))
 
-# Visualize ROC-AUC for both models
+
 plt.figure(figsize=(10, 6))
 
 # Decision Tree ROC-AUC
@@ -111,7 +110,7 @@ plt.title("ROC-AUC Comparison")
 plt.legend(loc="lower right")
 plt.show()
 
-# Verify feature indices used by the Decision Tree
+
 feature_indices = dt_model.tree_.feature
 valid_features = feature_indices[feature_indices != -2]
 print("Valid feature indices (used for splits):", valid_features)
@@ -126,3 +125,4 @@ plot_tree(
     filled=True
 )
 plt.show()
+# data set used can be found here https://www.kaggle.com/datasets/mrsimple07/obesity-prediction/code
